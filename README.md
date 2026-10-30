@@ -41,6 +41,7 @@ node prod-smoke.mjs <carpeta>  ·  node pwa-check.mjs
 ## Importar la base de datos de un consultorio
 El Excel (hojas Pacientes, Citas, Tratamientos, Pagos_Abonos) se convierte a JSON y se carga en una sede:
 ```
-node import-clinica.mjs datos.json sede01 [--dry] [--emu]
+node import-clinica.mjs datos.json sede01 [--dry] [--emu]   # pacientes, citas, pagos y aranceles
+node import-historial.mjs sede01 [--dry] [--emu]             # atenciones (citas atendidas) y presupuestos (abonos)
 ```
 No duplica: si la sede ya tiene pacientes importados, se cancela.

@@ -7,7 +7,8 @@ import { openConsultation, chargePending, startWalkIn } from '../consult.js';
 
 const BILL = {
   abierta: '<span class="badge badge-info">En curso</span>', pendiente: '<span class="badge badge-danger">Por cobrar</span>',
-  pagada: '<span class="badge badge-success">Pagada</span>', sin_cargo: '<span class="badge badge-neutral">Sin cargo</span>', anulada: '<span class="badge badge-danger">Anulada</span>'
+  pagada: '<span class="badge badge-success">Pagada</span>', sin_cargo: '<span class="badge badge-neutral">Sin cargo</span>', anulada: '<span class="badge badge-danger">Anulada</span>',
+  importada: '<span class="badge badge-neutral">Sistema anterior</span>'
 };
 const due = (c) => round2(itemsTotal(c.charges) - (c.discount || 0));
 let state = { tab: 'historial', from: null, to: null, q: '', doctor: 'all' };
