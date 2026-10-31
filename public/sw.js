@@ -1,5 +1,5 @@
 ﻿// Sano Dental â€” Service Worker (PWA, funcionamiento sin conexiÃ³n)
-const VERSION = 'sanodental-v1.0.1';
+const VERSION = 'sanodental-v1.0.2';
 const SDK = 'https://www.gstatic.com/firebasejs/10.14.1/';
 const VIEWS = ['dashboard', 'agenda', 'patients', 'consultations', 'plans', 'lab', 'pos', 'invoices', 'cash', 'inventory', 'reports', 'settings', 'admin', 'search', 'verify'];
 const SHELL = [

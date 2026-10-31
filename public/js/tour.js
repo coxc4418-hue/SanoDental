@@ -14,8 +14,8 @@ export const TOURS = {
       { route: 'inicio', sel: ['[data-tour="kpis"]'], title: 'Tu día de un vistazo', text: 'Citas de hoy, pacientes en sala de espera o en el sillón, lo cobrado hoy en tu moneda y el saldo pendiente de los presupuestos.' },
       { route: 'inicio', sel: ['[data-tour="waiting"]'], title: 'Sala de espera', text: 'Cuando el paciente llega, márcalo como “Llegó” en la agenda: aparece aquí en orden de llegada con su tiempo de espera. Toca “Atender” para pasarlo al sillón.' },
       { route: 'inicio', sel: ['[data-tour="recall"]', '[data-tour="plans-dash"]'], title: 'Seguimiento', text: 'Pacientes a los que les toca limpieza o control (recall) y presupuestos presentados sin respuesta: invítalos por WhatsApp con un toque.' },
-      { route: 'presupuestos', sel: ['#main .kpis', '#main'], title: 'Presupuestos', text: 'Planes de tratamiento por fases con descuento, financiamiento y abonos. Ves cuánto está por aprobar, en tratamiento y el saldo de cada paciente.' },
-      { route: 'laboratorio', sel: ['#main .kpis', '#main'], title: 'Laboratorio', text: 'Coronas, prótesis, férulas… con fecha de envío, prueba y entrega. Te avisa cuando un trabajo está atrasado.' },
+      { route: 'presupuestos', sel: ['#view .kpis', '#view'], title: 'Presupuestos', text: 'Planes de tratamiento por fases con descuento, financiamiento y abonos. Ves cuánto está por aprobar, en tratamiento y el saldo de cada paciente.' },
+      { route: 'laboratorio', sel: ['#view .kpis', '#view'], title: 'Laboratorio', text: 'Coronas, prótesis, férulas… con fecha de envío, prueba y entrega. Te avisa cuando un trabajo está atrasado.' },
       { route: 'cobrar', sel: ['#pos-grid'], title: 'Cobrar', text: 'Las atenciones por cobrar aparecen arriba. También cobras procedimientos del arancel e insumos; se descuentan del inventario.' },
       { route: 'cobrar', sel: ['#c-pay', '#cart-fab'], title: 'Formas de pago', text: 'Varias formas de pago a la vez (efectivo, tarjeta, transferencia y los medios de tu país) con cálculo del vuelto. Todo en la moneda del país que elegiste.' },
       { route: 'caja', sel: ['.sb-nav [data-nav="reportes"]', '#k-body'], title: 'Reportes', text: 'Atenciones, tratamientos más realizados, producción por odontólogo, aceptación de presupuestos, inasistencias e ingresos. Protegidos con el PIN (en la demo: 1234).' },
@@ -60,7 +60,7 @@ export const TOURS = {
   presupuestos: {
     name: 'Presupuestos y abonos', desc: 'Plan de tratamiento, aprobación y pagos', icon: 'clipboard',
     steps: [
-      { route: 'presupuestos', sel: ['#main .kpis', '#main'], title: 'Tus presupuestos', text: 'Por aprobar, en tratamiento y saldo por cobrar. La tasa de aceptación te dice cuántos pacientes dicen que sí.' },
+      { route: 'presupuestos', sel: ['#view .kpis', '#view'], title: 'Tus presupuestos', text: 'Por aprobar, en tratamiento y saldo por cobrar. La tasa de aceptación te dice cuántos pacientes dicen que sí.' },
       { route: 'presupuestos', title: 'Fases y descuentos', text: 'Organiza el plan en fases (urgencia, básica, rehabilitación, estética, mantenimiento), aplica descuentos y ofrece financiamiento en cuotas.' },
       { route: 'presupuestos', title: 'Presentar y aprobar', text: 'Imprímelo con firma de aceptación y QR, o envíalo por WhatsApp. Al aprobarlo, cada tratamiento queda listo para marcarse en la atención.' },
       { route: 'presupuestos', title: 'Abonos', text: 'Registra abonos en cualquier momento: el sistema lleva lo realizado, lo abonado y lo que el paciente debe.' }

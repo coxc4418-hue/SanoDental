@@ -73,7 +73,8 @@ const SCENES = [
     act: async (v) => {
       await v.point('.consult-modal [data-tab="odo"]'); await sleep(900);
       await v.hl('.consult-modal .odo-toolbar', 2600);
-      await v.point('.consult-modal [data-tool="caries"]'); await sleep(500);
+      await v.point('.consult-modal [data-tool="caries"]'); await sleep(400);
+      await v.page.evaluate(() => document.querySelector('.consult-modal [data-odo-ed]')?.scrollIntoView({ block: 'center', behavior: 'smooth' })); await sleep(900);
       await v.point('.consult-modal [data-odo-ed] svg[data-tooth="16"] rect[data-s="O"]'); await sleep(500);
       await v.point('.consult-modal [data-odo-ed] svg[data-tooth="16"] polygon[data-s="M"]'); await sleep(500);
       await v.point('.consult-modal [data-odo-ed] svg[data-tooth="24"] rect[data-s="O"]'); await sleep(500);
@@ -129,7 +130,7 @@ const SCENES = [
   { id: '16-presupuestos', text: 'En Presupuestos ves todos los planes de tratamiento: los que esperan aprobación, los que están en curso y cuánto falta por cobrar. Abres uno y registras los abonos del paciente cuando quieras; el sistema lleva lo realizado, lo abonado y el saldo.',
     act: async (v) => {
       await v.nav('presupuestos'); await sleep(1000);
-      await v.hl('#main .kpis', 4000);
+      await v.hl('#view .kpis', 4000);
       await v.point('[data-p]'); await sleep(2000);
       await v.hl('.modal-backdrop:last-child .modal', 4500);
     }, after: 'closeModal' },
@@ -143,7 +144,7 @@ const SCENES = [
       await v.point('.modal-backdrop:last-child [data-tab="perio"], .modal-backdrop:last-child [data-tab="presupuestos"]'); await sleep(2200);
     }, after: 'closeModal' },
   { id: '18-laboratorio', text: 'En Laboratorio dental llevas las coronas, prótesis y férulas que mandas a hacer: el laboratorio, el color, la fecha de prueba y de entrega. El sistema te avisa cuando un trabajo está atrasado.',
-    act: async (v) => { await v.nav('laboratorio'); await sleep(1200); await v.hl('#main .kpis', 3500); await v.hl('#main .card, #main table', 3500); } },
+    act: async (v) => { await v.nav('laboratorio'); await sleep(1200); await v.hl('#view .kpis', 3500); await v.hl('#view .card, #view table', 3500); } },
   { id: '19-caja', text: 'En Cobrar están las atenciones pendientes y puedes vender procedimientos o insumos. En Caja abres el turno, registras los gastos y al cerrar el sistema te dice si sobra o falta dinero.',
     act: async (v) => { await v.nav('cobrar'); await sleep(1000); await v.hl('#pos-grid', 3500); await v.nav('caja'); await sleep(1000); await v.hl('#k-body .kpis', 4000); await v.hl('#k-close', 2000); } },
   { id: '20-reportes', text: 'Los reportes están protegidos con tu PIN. Ves los ingresos, los tratamientos más realizados, la producción de cada odontólogo, cuántos presupuestos te aceptan y la asistencia a las citas.',
@@ -225,7 +226,7 @@ function helpers(page) {
         if (!el) return 'sin elemento';
         const at = document.elementFromPoint(x, y);
         if (at && (at === el || el.contains(at))) return 'ok';
-        el.click();
+        if (typeof el.click === 'function') el.click(); else el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         return 'directo: ' + (at ? at.tagName + '.' + at.className : 'nada');
       }, sel, text || null, x, y);
       if (hit === 'ok') await page.mouse.click(x, y);
@@ -284,7 +285,11 @@ function cardHTML(kind) {
 // ======================================================================
 // Grabación
 // ======================================================================
-const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--no-sandbox', `--window-size=${W},${H}`, '--autoplay-policy=no-user-gesture-required'] });
+const ENCODE_ONLY = !!process.env.ENCODE_ONLY;
+const PHONE = [];
+let parts = [];
+if (!ENCODE_ONLY) {
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--no-sandbox', `--window-size=${W},${H}`, '--autoplay-policy=no-user-gesture-required', '--disable-gpu', '--disable-extensions', '--renderer-process-limit=2'] });
 const app = await browser.newPage();
 await app.setViewport({ width: W, height: H, deviceScaleFactor: 1 });
 await app.evaluateOnNewDocument(OVERLAY);
@@ -292,7 +297,7 @@ await app.evaluateOnNewDocument(() => { window.print = () => {}; try { localStor
 const v = helpers(app);
 
 // Capturas del teléfono (Android) para la escena de instalación
-const PHONE = [];
+// PHONE se declara arriba
 {
   const ctx = await browser.createBrowserContext();
   const m = await ctx.newPage();
@@ -314,7 +319,7 @@ await app.goto(APP, { waitUntil: 'networkidle0' });
 await app.waitForSelector('#login-form');
 await sleep(1200);
 
-const parts = [];
+parts = [];
 for (const sc of SCENES.filter((s) => !process.env.UNTIL || s.id <= process.env.UNTIL)) {
   const voice = tts(sc);
   console.log(`● ${sc.id} (${voice.dur.toFixed(1)} s)`);
@@ -359,7 +364,20 @@ for (const sc of SCENES.filter((s) => !process.env.UNTIL || s.id <= process.env.
   }
   if (sc.after === 'closeModal') { await app.keyboard.press('Escape'); await sleep(400); await app.keyboard.press('Escape'); await sleep(300); }
 }
+// Termina la demo usada en la grabación (se borra de la base de datos)
+try {
+  await app.bringToFront();
+  await app.keyboard.press('Escape'); await sleep(300);
+  await app.evaluate(() => document.getElementById('demo-end')?.click());
+  await app.waitForSelector('.modal [data-yes]', { timeout: 8000 }); await app.click('.modal [data-yes]');
+  await app.waitForSelector('#login-form', { timeout: 60000 });
+  console.log('Demo de la grabación terminada y borrada');
+} catch (e) { console.warn('No se pudo terminar la demo:', e.message); }
 await browser.close();
+writeFileSync(path.join(WORK, 'parts.json'), JSON.stringify(parts, null, 1));
+}
+if (ENCODE_ONLY) parts = JSON.parse(readFileSync(path.join(WORK, 'parts.json'), 'utf8'));
+if (process.env.RECORD_ONLY) { console.log('Grabación lista:', parts.length, 'escenas'); process.exit(0); }
 
 // ======================================================================
 // Montaje con ffmpeg: video + voz + subtítulos por escena, luego unión
