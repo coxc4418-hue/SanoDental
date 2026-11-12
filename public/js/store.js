@@ -2,7 +2,7 @@
 import {
   db, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot, query, where, writeBatch, increment
 } from './firebase.js';
-import { addDays, startOfDay, sha256, toast, todayKey, dayKey, applyLocale, scaleUSD } from './utils.js';
+import { addDays, startOfDay, sha256, toast, todayKey, dayKey, applyLocale, setFx, scaleUSD } from './utils.js';
 import { MEDICAL_TAGS, DEFAULT_PROCEDURES } from './clinical.js';
 
 // ---------- Citas ----------
@@ -69,6 +69,7 @@ export const LAB_WORKS = ['Corona metal-porcelana', 'Corona de zirconio', 'Coron
 export const VITA_SHADES = ['A1', 'A2', 'A3', 'A3.5', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4', 'D2', 'D3', 'D4', 'BL1', 'BL2', 'BL3', 'BL4'];
 
 const DEFAULT_SETTINGS = {
+  fx: { enabled: false, sym: 'Bs', name: 'Bolívares', rate: 0, updatedAt: '' },
   businessName: '',
   rif: '',
   phone: '',
@@ -177,6 +178,8 @@ class Store {
     listen(this.ref('config', 'settings'), 'settings', (s) => {
       this.settings = { ...DEFAULT_SETTINGS, ...(s.exists() ? s.data() : {}) };
       applyLocale(this.settings.country || 'VE', this.settings.currency);
+      this.settings.fx = { ...DEFAULT_SETTINGS.fx, ...(this.settings.fx || {}) };
+      setFx(this.settings.fx);
       // Aranceles guardados sin código o categoría: se completan con el arancel base
       if (Array.isArray(this.settings.services)) this.settings.services = this.settings.services.map((x) => ({ ...(DEFAULT_PROCEDURES.find((d) => d.code === x.code || d.name === x.name) || { cat: 'Otros', unit: 'diente', effect: null }), ...x }));
       for (const k of ['categories', 'services']) {
@@ -244,6 +247,7 @@ class Store {
 
   async saveSettings(patch) {
     Object.assign(this.settings, patch);
+    if (patch.fx) setFx(this.settings.fx);
     await this.save('config', 'settings', patch, true);
     this.emit('settings');
   }

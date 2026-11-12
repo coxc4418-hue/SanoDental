@@ -3,11 +3,12 @@ import { store, updateTenant, DEFAULT_RX_NOTE, DAYS } from '../store.js';
 import { requirePin, changePassword, authErrorMessage, session } from '../auth.js';
 import { esc, num, toast, parseNum, setBusy, toggleTheme, download, nowISO, round2, openModal, shortId, compressImage, confirmDialog, emptyState, loc, flagImg } from '../utils.js';
 import { icon } from '../icons.js';
+import { fxSectionHTML, bindFxSection } from '../bcv.js';
 import { openCountryPicker, salesWa, SALES_PHONE_FMT } from '../shared.js';
 import { isStandalone, bindInstallButtons } from '../install.js';
 import { DENTAL_SPECIALTIES, PROC_CATS, UNIT_LABEL, DEFAULT_PROCEDURES } from '../clinical.js';
 
-const SECTIONS = { consultorio: 'Consultorio', medicos: 'Odontólogos', agenda: 'Horario de agenda', servicios: 'Aranceles', documentos: 'Documentos y presupuestos', seguridad: 'Seguridad', apps: 'Instalar y respaldo' };
+const SECTIONS = { consultorio: 'Consultorio', moneda: 'Moneda y tasa', medicos: 'Odontólogos', agenda: 'Horario de agenda', servicios: 'Aranceles', documentos: 'Documentos y presupuestos', seguridad: 'Seguridad', apps: 'Instalar y respaldo' };
 const WEEK = [1, 2, 3, 4, 5, 0];
 
 export function mount(el, { params = {} }) {
@@ -142,6 +143,8 @@ export function mount(el, { params = {} }) {
         toast('Documentos guardados');
       };
     }
+
+    if (sec === 'moneda') { body.innerHTML = fxSectionHTML(); bindFxSection(body, render); }
 
     if (sec === 'seguridad') {
       body.innerHTML = `<div class="grid-2">
